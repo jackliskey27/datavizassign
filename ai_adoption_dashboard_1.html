@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Adoption Trends — Prof. Ryan Nelson</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #0D1B2A;
+    --slate:  #1B2A3B;
+    --blue:   #2563EB;
+    --blue-lt:#DBEAFE;
+    --red:    #DC2626;
+    --red-lt: #FEE2E2;
+    --muted:  #6B7280;
+    --rule:   #E5E7EB;
+    --light:  #F9FAFB;
+    --white:  #FFFFFF;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .header-pill {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+    background: rgba(37,99,235,0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--white);
+    letter-spacing: 0.01em;
+  }
+  .header-right {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── Hero band ── */
+  .hero {
+    background: var(--navy);
+    padding: 2rem 2.5rem 2.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .hero-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  .hero-sub {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  /* ── KPI row ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--slate);
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .kpi {
+    padding: 1.25rem 1.75rem;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.5s forwards;
+  }
+  .kpi:nth-child(1) { animation-delay: 0.05s; }
+  .kpi:nth-child(2) { animation-delay: 0.12s; }
+  .kpi:nth-child(3) { animation-delay: 0.19s; }
+  .kpi:nth-child(4) { animation-delay: 0.26s; border-right: none; }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  .kpi-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .kpi-value.blue { color: #60A5FA; }
+  .kpi-value.red  { color: #F87171; }
+  .kpi-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 300;
+  }
+
+  /* ── Main content ── */
+  main {
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    opacity: 0;
+    animation: fadeUp 0.5s forwards;
+  }
+  .card.full { grid-column: 1 / -1; animation-delay: 0.3s; }
+  .card:nth-of-type(2) { animation-delay: 0.38s; }
+  .card:nth-of-type(3) { animation-delay: 0.44s; }
+
+  .card-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 260px;
+  }
+  .card.full .chart-wrap { height: 280px; }
+
+  .insight-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--light);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .insight-box.red-accent { border-left-color: var(--red); }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Footer ── */
+  footer {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+  }
+
+  @media (max-width: 800px) {
+    main { grid-template-columns: 1fr; }
+    .card.full { grid-column: 1; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .kpi:nth-child(2) { border-right: none; }
+    .kpi:nth-child(4) { border-top: 1px solid rgba(255,255,255,0.07); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="header-pill">AI Adoption Trends</span>
+    <span class="header-title">Global Job Postings Analysis</span>
+  </div>
+  <div class="header-right">Prepared for Professor Ryan Nelson &nbsp;·&nbsp; 2017–2025</div>
+</header>
+
+<div class="hero">
+  <p class="hero-eyebrow">Data Analysis Report</p>
+  <h1 class="hero-heading">The Rise of AI in<br>Global Job Postings</h1>
+  <p class="hero-sub">How artificial intelligence has reshaped hiring demand across nine industries over eight years, 2017–2025.</p>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Mention rate — 2017</div>
+    <div class="kpi-value">17.4%</div>
+    <div class="kpi-sub">Baseline across all industries</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Mention rate — 2025</div>
+    <div class="kpi-value blue">68.8%</div>
+    <div class="kpi-sub">Across all industries</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total growth</div>
+    <div class="kpi-value">+51.4pp</div>
+    <div class="kpi-sub">Percentage points, 2017–2025</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Leading industry</div>
+    <div class="kpi-value red">Finance</div>
+    <div class="kpi-sub">65.4% avg — highest overall</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- Chart 1: Full width overall trend -->
+  <div class="card full">
+    <p class="card-eyebrow">01 — Overall trend</p>
+    <p class="card-title">Average AI mention rate, all industries</p>
+    <p class="card-desc">Share of job postings referencing AI across all nine industries, aggregated by year.</p>
+    <div class="chart-wrap">
+      <canvas id="chart1"></canvas>
+    </div>
+    <div class="insight-box">
+      The mention rate grew nearly fourfold between 2017 and 2025. The sharpest single-year jump occurred between 2021 and 2022 (+20.5pp), coinciding with the mainstream emergence of large language models. Growth has since plateaued, suggesting broad market saturation.
+    </div>
+  </div>
+
+  <!-- Chart 2: Finance -->
+  <div class="card">
+    <p class="card-eyebrow">02 — Industry spotlight</p>
+    <p class="card-title">Finance vs Tech — AI mention rate</p>
+    <p class="card-desc">The two industries with the highest sustained AI mention rates across the full period.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#2563EB"></span>Finance</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#DC2626"></span>Tech</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart2"></canvas>
+    </div>
+    <div class="insight-box red-accent">
+      Finance entered 2017 already elevated at 48.5%, reflecting early algorithmic hiring. Tech grew more steeply (+52.8pp), nearly converging with Finance by 2024. Both consistently outpaced the cross-industry average.
+    </div>
+  </div>
+
+  <!-- Chart 3: Bar chart 2025 snapshot -->
+  <div class="card">
+    <p class="card-eyebrow">03 — 2025 snapshot</p>
+    <p class="card-title">AI mention rate by industry — 2025</p>
+    <p class="card-desc">Ranked share of job postings mentioning AI for each of the nine industries in the most recent year.</p>
+    <div class="chart-wrap">
+      <canvas id="chart3"></canvas>
+    </div>
+    <div class="insight-box">
+      Finance and Tech remain dominant. Education showed the strongest late-period surge, reaching 75% in 2025 — up from just 15.6% in 2017.
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Source: AI Impact on Jobs Dataset, 2017–2025 &nbsp;·&nbsp; N = 2,804 job postings</span>
+  <span>Prepared for Professor Ryan Nelson &nbsp;·&nbsp; Confidential, for academic use</span>
+</footer>
+
+<script>
+const years = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
+const allInd = [17.4,37.2,35.0,37.5,41.4,61.9,63.6,67.9,68.8];
+const finance= [48.5,39.4,53.3,45.8,68.8,80.8,82.5,86.2,82.1];
+const tech   = [24.3,47.1,33.3,54.1,58.3,72.1,73.7,84.6,77.1];
+
+const data2025 = [
+  { industry: 'Finance',      val: 82.1 },
+  { industry: 'Tech',         val: 77.1 },
+  { industry: 'Education',    val: 75.0 },
+  { industry: 'Government',   val: 71.0 },
+  { industry: 'Energy',       val: 71.9 },
+  { industry: 'Retail',       val: 66.7 },
+  { industry: 'Agriculture',  val: 57.5 },
+  { industry: 'Manufacturing',val: 57.8 },
+  { industry: 'Healthcare',   val: 58.6 },
+].sort((a,b) => b.val - a.val);
+
+const BLUE = '#2563EB';
+const RED  = '#DC2626';
+const MUTED= '#9CA3AF';
+const RULE = '#F3F4F6';
+
+const baseOpts = (yMax=100) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: {
+    backgroundColor: '#0D1B2A',
+    titleColor: '#fff', bodyColor: '#9CA3AF',
+    padding: 10, cornerRadius: 6,
+    callbacks: { label: ctx => ` ${ctx.parsed.y !== undefined ? ctx.parsed.y : ctx.parsed.x}%` }
+  }},
+  scales: {
+    x: { grid: { color: RULE }, ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' } } },
+    y: { grid: { color: RULE }, min: 0, max: yMax,
+         ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' }, callback: v => v+'%' } }
+  }
+});
+
+// Chart 1 — overall trend
+new Chart(document.getElementById('chart1'), {
+  type: 'line',
+  data: {
+    labels: years,
+    datasets: [{
+      data: allInd,
+      borderColor: BLUE, backgroundColor: 'rgba(37,99,235,0.06)',
+      fill: true, tension: 0.4, borderWidth: 2.5,
+      pointRadius: 5, pointBackgroundColor: BLUE,
+      pointBorderColor: '#fff', pointBorderWidth: 2
+    }]
+  },
+  options: { ...baseOpts(100), scales: {
+    x: { grid: { color: RULE }, ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' }, autoSkip: false } },
+    y: { grid: { color: RULE }, min: 0, max: 100, ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' }, callback: v => v+'%' } }
+  }}
+});
+
+// Chart 2 — Finance vs Tech
+new Chart(document.getElementById('chart2'), {
+  type: 'line',
+  data: {
+    labels: years,
+    datasets: [
+      { label: 'Finance', data: finance, borderColor: BLUE, backgroundColor: 'rgba(37,99,235,0.05)',
+        fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 4,
+        pointBackgroundColor: BLUE, pointBorderColor: '#fff', pointBorderWidth: 2 },
+      { label: 'Tech', data: tech, borderColor: RED, backgroundColor: 'rgba(220,38,38,0.05)',
+        fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 4,
+        pointBackgroundColor: RED, pointBorderColor: '#fff', pointBorderWidth: 2 }
+    ]
+  },
+  options: { ...baseOpts(100), plugins: { legend: { display: false },
+    tooltip: { backgroundColor: '#0D1B2A', titleColor: '#fff', bodyColor: '#9CA3AF',
+      padding: 10, cornerRadius: 6 }
+  }, scales: {
+    x: { grid: { color: RULE }, ticks: { color: MUTED, font: { size: 10, family: 'DM Sans' }, autoSkip: false } },
+    y: { grid: { color: RULE }, min: 0, max: 100, ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' }, callback: v => v+'%' } }
+  }}
+});
+
+// Chart 3 — 2025 horizontal bar
+const barColors = data2025.map((d,i) =>
+  d.industry === 'Finance' ? BLUE : d.industry === 'Tech' ? RED : '#CBD5E1'
+);
+
+new Chart(document.getElementById('chart3'), {
+  type: 'bar',
+  data: {
+    labels: data2025.map(d => d.industry),
+    datasets: [{ data: data2025.map(d => d.val), backgroundColor: barColors, borderRadius: 4, borderSkipped: false }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#0D1B2A', titleColor: '#fff', bodyColor: '#9CA3AF',
+      padding: 10, cornerRadius: 6,
+      callbacks: { label: ctx => ` ${ctx.parsed.x}%` }
+    }},
+    scales: {
+      x: { grid: { color: RULE }, min: 0, max: 100,
+           ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' }, callback: v => v+'%' } },
+      y: { grid: { display: false }, ticks: { color: MUTED, font: { size: 11, family: 'DM Sans' } } }
+    }
+  }
+});
+</script>
+</body>
+</html>
